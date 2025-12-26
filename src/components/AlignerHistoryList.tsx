@@ -87,28 +87,29 @@ function AlignerHistoryItem({
                     </View>
                 </View>
 
-                <View style={styles.itemRight}>
-                    {aligner.completed && (
-                        <View style={styles.completedBadge}>
-                            <Text style={styles.completedText}>Completado</Text>
-                        </View>
-                    )}
-                    {isInProgress && (
-                        <View style={styles.inProgressBadge}>
-                            <Text style={styles.inProgressText}>En progreso</Text>
-                        </View>
-                    )}
-                    {isPending && (
-                        <View style={styles.pendingBadge}>
-                            <Text style={styles.pendingText}>Pendiente</Text>
-                        </View>
-                    )}
-                </View>
+                <View style={styles.rightContainer}>
+                    <View style={styles.badgeContainer}>
+                        {aligner.completed && (
+                            <View style={styles.completedBadge}>
+                                <Text style={styles.completedText}>Completado</Text>
+                            </View>
+                        )}
+                        {isInProgress && (
+                            <View style={styles.inProgressBadge}>
+                                <Text style={styles.inProgressText}>En progreso</Text>
+                            </View>
+                        )}
+                        {isPending && (
+                            <View style={styles.pendingBadge}>
+                                <Text style={styles.pendingText}>Pendiente</Text>
+                            </View>
+                        )}
+                    </View>
 
-                {hasUsageData && (
                     <TouchableOpacity
                         onPress={() => setExpanded(!expanded)}
                         style={styles.expandButton}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                         <Ionicons
                             name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -116,34 +117,42 @@ function AlignerHistoryItem({
                             color={colors.textSecondary}
                         />
                     </TouchableOpacity>
-                )}
+                </View>
             </TouchableOpacity>
 
-            {expanded && hasUsageData && (
+            {expanded && (
                 <View style={styles.expandedContent}>
-                    <View style={styles.totalUsage}>
-                        <Text style={styles.totalUsageLabel}>Total sin aparato:</Text>
-                        <Text style={styles.totalUsageValue}>
-                            {alignerCalculator.formatTimeWithoutAligner(totalTimeWithout)}
-                        </Text>
-                    </View>
-
-                    <View style={styles.dailyBreakdown}>
-                        <Text style={styles.dailyBreakdownTitle}>Detalle por día:</Text>
-                        {dailyUsageForAligner.map((day) => (
-                            <View key={day.date} style={styles.dailyItem}>
-                                <Text style={styles.dailyDate}>
-                                    {new Date(day.date).toLocaleDateString('es-ES', {
-                                        day: 'numeric',
-                                        month: 'short'
-                                    })}
-                                </Text>
-                                <Text style={styles.dailyTime}>
-                                    {alignerCalculator.formatTimeWithoutAligner(day.secondsWithoutAligner)}
+                    {hasUsageData ? (
+                        <>
+                            <View style={styles.totalUsage}>
+                                <Text style={styles.totalUsageLabel}>Total sin aparato:</Text>
+                                <Text style={styles.totalUsageValue}>
+                                    {alignerCalculator.formatTimeWithoutAligner(totalTimeWithout)}
                                 </Text>
                             </View>
-                        ))}
-                    </View>
+
+                            <View style={styles.dailyBreakdown}>
+                                <Text style={styles.dailyBreakdownTitle}>Detalle por día:</Text>
+                                {dailyUsageForAligner.map((day) => (
+                                    <View key={day.date} style={styles.dailyItem}>
+                                        <Text style={styles.dailyDate}>
+                                            {new Date(day.date).toLocaleDateString('es-ES', {
+                                                day: 'numeric',
+                                                month: 'short'
+                                            })}
+                                        </Text>
+                                        <Text style={styles.dailyTime}>
+                                            {alignerCalculator.formatTimeWithoutAligner(day.secondsWithoutAligner)}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </>
+                    ) : (
+                        <Text style={styles.noDataText}>
+                            No hay registros de tiempo sin aparato para este alineador.
+                        </Text>
+                    )}
                 </View>
             )}
         </>
@@ -210,6 +219,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.md,
+        flex: 1, // Let it take available space
+    },
+    rightContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
     },
     itemInfo: {
         gap: spacing.xs,
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
         ...typography.caption,
         color: colors.textSecondary,
     },
-    itemRight: {
+    badgeContainer: {
         alignItems: 'flex-end',
     },
     completedBadge: {
@@ -279,6 +294,13 @@ const styles = StyleSheet.create({
         marginTop: spacing.xs,
         marginBottom: spacing.sm,
         marginHorizontal: spacing.xs,
+    },
+    noDataText: {
+        ...typography.caption,
+        color: colors.textMuted,
+        fontStyle: 'italic',
+        textAlign: 'center',
+        padding: spacing.sm,
     },
     totalUsage: {
         flexDirection: 'row',
