@@ -20,7 +20,7 @@ export function HomeScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.header}>
-                    <Text style={styles.title}>🦷 Invisalign Tracker</Text>
+                    <Text style={styles.title}>🦷 InvisiTracker</Text>
                     <Text style={styles.date}>
                         {new Date().toLocaleDateString('es-ES', {
                             weekday: 'long',

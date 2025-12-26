@@ -102,7 +102,7 @@ export function SetupScreen({ onComplete }: SetupScreenProps) {
         >
             <View style={styles.header}>
                 <Ionicons name="medical" size={64} color={colors.primary} />
-                <Text style={styles.title}>Invisalign Tracker</Text>
+                <Text style={styles.title}>InvisiTracker</Text>
                 <Text style={styles.subtitle}>
                     Configura tu tratamiento para comenzar
                 </Text>

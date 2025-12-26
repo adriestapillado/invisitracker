@@ -1,7 +1,7 @@
 {
     "expo": {
-        "name": "Invisalign Tracker",
-        "slug": "invisalign-tracker",
+        "name": "InvisiTracker",
+        "slug": "invisitracker",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
