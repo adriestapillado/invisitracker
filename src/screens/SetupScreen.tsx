@@ -18,6 +18,7 @@ import { useAppContext } from '../context/AppContext';
 import alignerCalculator from '../services/AlignerCalculator';
 import notificationService from '../services/NotificationService';
 import { formatDate } from '../constants/config';
+import DatePickerModal from '../components/DatePickerModal';
 
 interface SetupScreenProps {
     onComplete: () => void;
@@ -29,6 +30,7 @@ export function SetupScreen({ onComplete }: SetupScreenProps) {
     // Default to today
     const today = new Date();
     const [startDate, setStartDate] = useState(formatDate(today));
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [daysPerAligner, setDaysPerAligner] = useState('14');
     const [totalAligners, setTotalAligners] = useState('20');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,19 +110,42 @@ export function SetupScreen({ onComplete }: SetupScreenProps) {
 
             <View style={styles.form}>
                 {/* Start Date */}
+                {/* Start Date */}
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>Fecha de inicio del tratamiento</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={startDate}
-                        onChangeText={setStartDate}
-                        placeholder="YYYY-MM-DD"
-                        placeholderTextColor={colors.textMuted}
-                    />
+                    <TouchableOpacity
+                        style={styles.dateButton}
+                        onPress={() => setShowDatePicker(true)}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="calendar-outline" size={24} color={colors.textPrimary} />
+                        <Text style={styles.dateButtonText}>
+                            {new Date(startDate).toLocaleDateString('es-ES', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </Text>
+                        <Ionicons name="chevron-down" size={20} color={colors.textSecondary} />
+                    </TouchableOpacity>
                     <Text style={styles.hint}>
-                        Formato: año-mes-día (ej: 2025-01-15)
+                        La fecha en que te pusiste el primer alineador
                     </Text>
                 </View>
+
+                <DatePickerModal
+                    visible={showDatePicker}
+                    date={new Date(startDate)}
+                    onConfirm={(date) => {
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        setStartDate(`${year}-${month}-${day}`);
+                        setShowDatePicker(false);
+                    }}
+                    onCancel={() => setShowDatePicker(false)}
+                />
 
                 {/* Days per aligner */}
                 <View style={styles.inputGroup}>
@@ -255,6 +280,21 @@ const styles = StyleSheet.create({
         ...typography.caption,
         color: colors.textMuted,
         textAlign: 'center',
+    },
+    dateButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.card,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
+        borderWidth: 1,
+        borderColor: colors.border,
+        gap: spacing.sm,
+    },
+    dateButtonText: {
+        ...typography.body,
+        color: colors.textPrimary,
+        flex: 1,
     },
 });
 

@@ -119,6 +119,77 @@ class AlignerCalculator {
             minute: '2-digit',
         });
     }
+
+    /**
+     * Format time without aligner for display
+     */
+    formatTimeWithoutAligner(seconds: number): string {
+        if (seconds === 0) return '0m';
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        if (hours === 0) return `${minutes}m`;
+        if (minutes === 0) return `${hours}h`;
+        return `${hours}h ${minutes}m`;
+    }
+
+    /**
+     * Recalculate aligner schedule from a specific aligner onwards
+     * @param aligners Current aligner array
+     * @param fromAlignerNumber Aligner number to start recalculating from
+     * @param newEndDate New end date for the fromAligner
+     * @param daysPerAligner Days per aligner setting
+     * @returns Updated aligner array
+     */
+    recalculateScheduleFromAligner(
+        aligners: Aligner[],
+        fromAlignerNumber: number,
+        newEndDate: string,
+        daysPerAligner: number
+    ): Aligner[] {
+        const updated = [...aligners];
+        const fromIndex = updated.findIndex(a => a.alignerNumber === fromAlignerNumber);
+
+        if (fromIndex === -1) return updated;
+
+        // Update the target aligner's end date
+        const targetAligner = updated[fromIndex];
+        const oldEndDate = targetAligner.endDate;
+
+        // If date hasn't changed, return original array
+        if (oldEndDate === newEndDate) return updated;
+
+        // Update target aligner
+        targetAligner.endDate = newEndDate;
+
+        // Update change date notification time
+        const endDate = parseDate(newEndDate);
+        const changeDateTime = new Date(endDate);
+        changeDateTime.setHours(NOTIFICATION_HOUR, NOTIFICATION_MINUTE, 0, 0);
+        targetAligner.changeDate = changeDateTime.toISOString();
+
+        // Recalculate all subsequent aligners
+        for (let i = fromIndex + 1; i < updated.length; i++) {
+            const prevEndDate = parseDate(updated[i - 1].endDate);
+            const startDate = new Date(prevEndDate);
+            startDate.setDate(startDate.getDate() + 1);
+
+            const currentEndDate = new Date(startDate);
+            currentEndDate.setDate(currentEndDate.getDate() + daysPerAligner - 1);
+
+            const currentChangeDateTime = new Date(currentEndDate);
+            currentChangeDateTime.setHours(NOTIFICATION_HOUR, NOTIFICATION_MINUTE, 0, 0);
+
+            updated[i] = {
+                ...updated[i],
+                startDate: formatDate(startDate),
+                endDate: formatDate(currentEndDate),
+                changeDate: currentChangeDateTime.toISOString(),
+            };
+        }
+
+        return updated;
+    }
 }
 
 export const alignerCalculator = new AlignerCalculator();

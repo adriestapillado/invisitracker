@@ -1,11 +1,12 @@
 // Current Aligner Card Component
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../styles/colors';
 import spacing, { borderRadius } from '../styles/spacing';
 import typography from '../styles/typography';
 import useAlignerSchedule from '../hooks/useAlignerSchedule';
+import DatePickerModal from './DatePickerModal';
 
 export function CurrentAlignerCard() {
     const {
@@ -14,7 +15,26 @@ export function CurrentAlignerCard() {
         daysRemaining,
         formattedChangeDate,
         totalAligners,
+        updateAlignerDate,
     } = useAlignerSchedule();
+
+    const [isDatePickerVisible, setDatePickerVisible] = React.useState(false);
+
+    const handleDateConfirm = (date: Date) => {
+        if (currentAligner) {
+            // Check if user selected previous day (meaning aligner changed today/yesterday)
+            // Or just wants to adjust the change date
+
+            // Adjust the date to local formatted string YYYY-MM-DD
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+
+            updateAlignerDate(currentAligner.alignerNumber, formattedDate);
+        }
+        setDatePickerVisible(false);
+    };
 
     if (!currentAligner) {
         return (
@@ -60,6 +80,12 @@ export function CurrentAlignerCard() {
                     <Text style={styles.changeDate}>
                         Cambio: {formattedChangeDate}
                     </Text>
+                    <TouchableOpacity
+                        onPress={() => setDatePickerVisible(true)}
+                        style={styles.editButton}
+                    >
+                        <Ionicons name="pencil" size={14} color={colors.primary} />
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -70,6 +96,17 @@ export function CurrentAlignerCard() {
                         ¡Hoy es día de cambio!
                     </Text>
                 </View>
+            )}
+
+            {currentAligner && (
+                <DatePickerModal
+                    visible={isDatePickerVisible}
+                    date={new Date(currentAligner.endDate)}
+                    onConfirm={handleDateConfirm}
+                    onCancel={() => setDatePickerVisible(false)}
+                    minimumDate={new Date()} // Can't change to past date generally, but maybe yesterday? Let's verify requirement. 
+                // Allowing any date for flexibility
+                />
             )}
         </View>
     );
@@ -161,6 +198,12 @@ const styles = StyleSheet.create({
         color: colors.textSecondary,
         textAlign: 'center',
         padding: spacing.lg,
+    },
+    editButton: {
+        padding: spacing.xs,
+        backgroundColor: colors.backgroundLight,
+        borderRadius: borderRadius.sm,
+        marginLeft: spacing.xs,
     },
 });
 

@@ -57,6 +57,26 @@ export function useAlignerSchedule() {
         });
     }, [dispatch]);
 
+    // Unmark aligner as completed
+    const unmarkCompleted = useCallback((alignerNumber: number) => {
+        dispatch({
+            type: 'UNMARK_ALIGNER_COMPLETED',
+            payload: { alignerNumber },
+        });
+    }, [dispatch]);
+
+    // Update aligner end date (and recalculate schedule)
+    const updateAlignerDate = useCallback((alignerNumber: number, newEndDate: string) => {
+        dispatch({
+            type: 'UPDATE_ALIGNER_SCHEDULE',
+            payload: {
+                alignerNumber,
+                newEndDate,
+                daysPerAligner: appState.treatmentConfig.daysPerAligner
+            },
+        });
+    }, [dispatch, appState.treatmentConfig.daysPerAligner]);
+
     // Generate new schedule
     const generateSchedule = useCallback((
         startDate: string,
@@ -76,7 +96,10 @@ export function useAlignerSchedule() {
         totalAligners: appState.treatmentConfig.totalAligners,
         formattedChangeDate,
         alignerHistory: appState.alignerHistory,
+        dailyUsageHistory: appState.dailyUsageHistory,
         markCompleted,
+        unmarkCompleted,
+        updateAlignerDate,
         generateSchedule,
     };
 }

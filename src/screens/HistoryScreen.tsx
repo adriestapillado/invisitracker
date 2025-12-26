@@ -9,7 +9,7 @@ import AlignerHistoryList from '../components/AlignerHistoryList';
 import useAlignerSchedule from '../hooks/useAlignerSchedule';
 
 export function HistoryScreen() {
-    const { alignerHistory, completedCount, totalAligners, markCompleted } = useAlignerSchedule();
+    const { alignerHistory, completedCount, totalAligners, markCompleted, dailyUsageHistory } = useAlignerSchedule();
 
     return (
         <View style={styles.container}>
@@ -25,6 +25,7 @@ export function HistoryScreen() {
             <View style={styles.listContainer}>
                 <AlignerHistoryList
                     aligners={alignerHistory}
+                    dailyUsageHistory={dailyUsageHistory}
                     onMarkCompleted={markCompleted}
                 />
             </View>

@@ -14,6 +14,12 @@ export interface TodayTimer {
     lastStartTime?: number;      // Timestamp when started
 }
 
+export interface DailyUsage {
+    date: string;                // "2025-12-26" (YYYY-MM-DD)
+    secondsWithoutAligner: number; // Time without aligner that day
+    alignerNumber: number;       // Which aligner was active this day
+}
+
 export interface Aligner {
     alignerNumber: number;       // 1-20
     startDate: string;           // "2025-01-15" (YYYY-MM-DD)
@@ -30,6 +36,9 @@ export interface AppState {
 
     // Current day timer
     todayTimer: TodayTimer;
+
+    // Daily usage history
+    dailyUsageHistory: DailyUsage[];
 
     // Aligner history
     alignerHistory: Aligner[];
@@ -58,7 +67,10 @@ export type AppAction =
     | { type: 'INCREMENT_TIMER'; payload: { seconds: number } }
     | { type: 'RESET_TIMER'; payload?: { date: string } }
     | { type: 'RESET_TIMER_TODAY' }
+    | { type: 'SAVE_DAILY_USAGE'; payload: { date: string; seconds: number; alignerNumber: number } }
     | { type: 'MARK_ALIGNER_COMPLETED'; payload: { alignerNumber: number } }
+    | { type: 'UNMARK_ALIGNER_COMPLETED'; payload: { alignerNumber: number } }
+    | { type: 'UPDATE_ALIGNER_SCHEDULE'; payload: { alignerNumber: number; newEndDate: string; daysPerAligner: number } }
     | { type: 'UPDATE_CURRENT_ALIGNER'; payload: { alignerNumber: number; startDate: string; nextChangeDate: string; nextAlignerNumber: number } }
     | { type: 'RESET_ALL_DATA' }
     | { type: 'TOGGLE_NOTIFICATIONS'; payload: { enabled: boolean } };

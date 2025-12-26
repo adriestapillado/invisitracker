@@ -28,6 +28,7 @@ export const getInitialAppState = () => ({
         isRunning: false,
         lastStartTime: undefined,
     },
+    dailyUsageHistory: [],
     alignerHistory: [],
     currentAlignerNumber: 1,
     currentAlignerStartDate: '',

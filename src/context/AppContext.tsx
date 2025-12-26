@@ -4,6 +4,7 @@ import { createContext, useReducer, useContext, useEffect, useState, ReactNode }
 import { AppState, AppAction } from '../types';
 import { getInitialAppState, formatDate, APP_VERSION } from '../constants/config';
 import storageService from '../services/StorageService';
+import alignerCalculator from '../services/AlignerCalculator';
 
 // Initial state
 const initialState = getInitialAppState();
@@ -82,6 +83,19 @@ export function appReducer(state: AppState, action: AppAction): AppState {
                 },
             };
 
+        case 'SAVE_DAILY_USAGE':
+            return {
+                ...state,
+                dailyUsageHistory: [
+                    ...state.dailyUsageHistory,
+                    {
+                        date: action.payload.date,
+                        secondsWithoutAligner: action.payload.seconds,
+                        alignerNumber: action.payload.alignerNumber,
+                    },
+                ],
+            };
+
         case 'MARK_ALIGNER_COMPLETED':
             return {
                 ...state,
@@ -90,6 +104,28 @@ export function appReducer(state: AppState, action: AppAction): AppState {
                         ? { ...a, completed: true }
                         : a
                 ),
+            };
+
+        case 'UNMARK_ALIGNER_COMPLETED':
+            return {
+                ...state,
+                alignerHistory: state.alignerHistory.map(a =>
+                    a.alignerNumber === action.payload.alignerNumber
+                        ? { ...a, completed: false }
+                        : a
+                ),
+            };
+
+        case 'UPDATE_ALIGNER_SCHEDULE':
+            return {
+                ...state,
+                alignerHistory: alignerCalculator.recalculateScheduleFromAligner(
+                    state.alignerHistory,
+                    action.payload.alignerNumber,
+                    action.payload.newEndDate,
+                    action.payload.daysPerAligner
+                ),
+                lastUpdated: new Date().toISOString(),
             };
 
         case 'UPDATE_CURRENT_ALIGNER':
@@ -141,6 +177,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     // Check if day has changed and reset timer if needed
                     const today = formatDate(new Date());
                     if (saved.todayTimer.date !== today) {
+                        // Save yesterday's usage before resetting
+                        if (saved.todayTimer.secondsToday > 0) {
+                            const yesterdayAligner = saved.currentAlignerNumber || 1;
+                            saved.dailyUsageHistory = [
+                                ...(saved.dailyUsageHistory || []),
+                                {
+                                    date: saved.todayTimer.date,
+                                    secondsWithoutAligner: saved.todayTimer.secondsToday,
+                                    alignerNumber: yesterdayAligner,
+                                },
+                            ];
+                        }
                         saved.todayTimer = {
                             date: today,
                             secondsToday: 0,
