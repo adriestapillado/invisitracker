@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Analytics } from '@vercel/analytics/react';
 import { AppProvider, useAppContext } from './src/context/AppContext';
 import { Screen } from './src/types';
 import colors from './src/styles/colors';
@@ -71,6 +72,7 @@ export default function App() {
         <AppProvider>
             <StatusBar style="light" />
             <AppContent />
+            <Analytics />
         </AppProvider>
     );
 }
