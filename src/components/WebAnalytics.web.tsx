@@ -1,5 +1,6 @@
 import React from 'react';
-import { Analytics } from '@vercel/analytics/react';
+// @ts-ignore
+import { Analytics } from '@vercel/analytics/dist/react';
 
 export default function WebAnalytics() {
     return <Analytics />;
