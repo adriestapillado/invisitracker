@@ -1,6 +1,6 @@
-// App Context - Global state management
 import * as React from 'react';
 import { createContext, useReducer, useContext, useEffect, useState, ReactNode } from 'react';
+import { AppState as RNAppState } from 'react-native';
 import { AppState, AppAction } from '../types';
 import { getInitialAppState, formatDate, APP_VERSION } from '../constants/config';
 import storageService from '../services/StorageService';
@@ -146,6 +146,25 @@ export function appReducer(state: AppState, action: AppAction): AppState {
                 notificationsEnabled: action.payload.enabled,
             };
 
+        case 'SYNC_BACKGROUND_TIME':
+            return {
+                ...state,
+                todayTimer: {
+                    ...state.todayTimer,
+                    secondsToday: state.todayTimer.secondsToday + action.payload.elapsedSeconds,
+                    lastStartTime: Date.now(),
+                },
+            };
+
+        case 'SET_TIMER_START':
+            return {
+                ...state,
+                todayTimer: {
+                    ...state.todayTimer,
+                    lastStartTime: action.payload.lastStartTime,
+                },
+            };
+
         default:
             return state;
     }
@@ -195,6 +214,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                             isRunning: false,
                             lastStartTime: undefined,
                         };
+                    } else if (saved.todayTimer.isRunning && saved.todayTimer.lastStartTime) {
+                        // Sync background time if same day and running
+                        const elapsed = Math.floor((Date.now() - saved.todayTimer.lastStartTime) / 1000);
+                        if (elapsed > 0) {
+                            saved.todayTimer.secondsToday += elapsed;
+                            saved.todayTimer.lastStartTime = Date.now();
+                        }
                     }
                     dispatch({ type: 'INITIALIZE_APP', payload: saved });
                 }
@@ -206,6 +232,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         };
 
         loadInitialState();
+
+        // Listen for app state changes (resume from background)
+        const subscription = RNAppState.addEventListener('change', (nextAppState) => {
+            if (nextAppState === 'active') {
+                console.log('App resumed, syncing state...');
+                loadInitialState();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
     }, []);
 
     // Save state to storage on changes

@@ -1,7 +1,8 @@
-// Daily Timer Hook
 import { useEffect, useState, useCallback } from 'react';
+import { Platform, AppState as RNAppState } from 'react-native';
 import { useAppContext } from '../context/AppContext';
 import timerService from '../services/TimerService';
+import BackgroundTimerService from '../services/BackgroundTimerService';
 import { formatDate, TIMER_INTERVAL, DATE_CHECK_INTERVAL } from '../constants/config';
 
 export function useDailyTimer() {
@@ -27,12 +28,33 @@ export function useDailyTimer() {
         return () => clearInterval(interval);
     }, [appState.todayTimer.date, dispatch]);
 
+    // Register background task
+    useEffect(() => {
+        BackgroundTimerService.enable();
+        return () => {
+            BackgroundTimerService.disable();
+        };
+    }, []);
+
     // Update every second if running
     useEffect(() => {
         if (!appState.todayTimer.isRunning) return;
 
+        // Save start timestamp for background calc
+        const startTimestamp = Date.now();
+        dispatch({
+            type: 'SET_TIMER_START',
+            payload: { lastStartTime: startTimestamp }
+        });
+
         const interval = setInterval(() => {
-            dispatch({ type: 'INCREMENT_TIMER', payload: { seconds: 1 } });
+            // Check visibility for Web
+            const isWeb = Platform.OS === 'web';
+            const isVisible = isWeb ? (typeof document !== 'undefined' && document.visibilityState === 'visible') : true;
+
+            if (isVisible) {
+                dispatch({ type: 'INCREMENT_TIMER', payload: { seconds: 1 } });
+            }
         }, TIMER_INTERVAL);
 
         return () => clearInterval(interval);

@@ -26,7 +26,8 @@
             "package": "com.invisalign.tracker",
             "permissions": [
                 "android.permission.POST_NOTIFICATIONS",
-                "android.permission.RECEIVE_BOOT_COMPLETED"
+                "android.permission.RECEIVE_BOOT_COMPLETED",
+                "android.permission.WAKE_LOCK"
             ]
         },
         "web": {
@@ -40,7 +41,9 @@
                     "icon": "./assets/notification-icon.png",
                     "color": "#4facfe"
                 }
-            ]
+            ],
+            "expo-background-fetch",
+            "expo-task-manager"
         ]
     }
 }

@@ -73,6 +73,8 @@ export type AppAction =
     | { type: 'UPDATE_ALIGNER_SCHEDULE'; payload: { alignerNumber: number; newEndDate: string; daysPerAligner: number } }
     | { type: 'UPDATE_CURRENT_ALIGNER'; payload: { alignerNumber: number; startDate: string; nextChangeDate: string; nextAlignerNumber: number } }
     | { type: 'RESET_ALL_DATA' }
-    | { type: 'TOGGLE_NOTIFICATIONS'; payload: { enabled: boolean } };
+    | { type: 'TOGGLE_NOTIFICATIONS'; payload: { enabled: boolean } }
+    | { type: 'SYNC_BACKGROUND_TIME'; payload: { elapsedSeconds: number } }
+    | { type: 'SET_TIMER_START'; payload: { lastStartTime: number } };
 
 export type Screen = 'setup' | 'home' | 'history' | 'settings';
