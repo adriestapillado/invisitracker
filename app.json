@@ -1,49 +1,51 @@
 {
-    "expo": {
-        "name": "InvisiTracker",
-        "slug": "invisitracker",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "automatic",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#1a1a2e"
-        },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.invisalign.tracker"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#1a1a2e"
-            },
-            "package": "com.invisalign.tracker",
-            "permissions": [
-                "android.permission.POST_NOTIFICATIONS",
-                "android.permission.RECEIVE_BOOT_COMPLETED",
-                "android.permission.WAKE_LOCK"
-            ]
-        },
-        "web": {
-            "favicon": "./assets/favicon.png",
-            "bundler": "metro"
-        },
-        "plugins": [
-            [
-                "expo-notifications",
-                {
-                    "icon": "./assets/notification-icon.png",
-                    "color": "#4facfe"
-                }
-            ],
-            "expo-background-fetch",
-            "expo-task-manager"
-        ]
-    }
+  "expo": {
+    "name": "InvisiTracker",
+    "slug": "invisitracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a2e"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.invisalign.tracker"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a2e"
+      },
+      "package": "com.invisalign.tracker",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4facfe"
+        }
+      ],
+      "expo-background-fetch",
+      "expo-task-manager",
+      "@react-native-community/datetimepicker",
+      "expo-font"
+    ]
+  }
 }
